@@ -1,0 +1,20 @@
+[
+	{
+		"id": 1,
+		"title": "Fernet",
+		"description": "Fernet 750ml",
+		"price": 14500,
+		"thumbnail": "https://dummyimage.com/200x200/000/fff",
+		"code": "FRT750",
+		"stock": 20
+	},
+	{
+		"id": 2,
+		"title": "Campari",
+		"description": "Campari 750ml",
+		"price": 12500,
+		"thumbnail": "https://dummyimage.com/200x200/000/fff",
+		"code": "CPR750",
+		"stock": 18
+	}
+]
