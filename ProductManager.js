@@ -37,7 +37,7 @@ class ProductManager {
     }
 
     async addProduct(title, description, price, thumbnail, code, stock){
-        const addProduct = this.readProducts()
+        const addProduct = await this.readProducts()
         let newId = addProduct.length 
                     ? addProduct[addProduct.length-1].id+1
                     : 1
@@ -73,9 +73,8 @@ class ProductManager {
 
     async getProductById(idProducto){
         try {
-            const products = await fs.promises.readFile(this.path,"utf-8")
-            const productsJson = JSON.parse(products)
-            const getId = productsJson.find((idProductos)=>{return idProductos.id === idProducto})
+            const getProductById = await this.readProducts()
+            const getId = getProductById.find((idProductos)=>{return idProductos.id === idProducto})
             getId == undefined
                     ? console.log("El producto no fue encontrado")
                     : console.log("Producto: ", getId)
@@ -85,44 +84,60 @@ class ProductManager {
         
     }
 
-    async updateProduct(idProducto, title, description, price, thumbnail, code, stock){
-        const updateProduct = {
-            id:idProducto,
-            title,
-            description,
-            price,
-            thumbnail,
-            code,
-            stock
+    // async updateProduct(idProducto, title, description, price, thumbnail, code, stock){
+    //     const updateProduct = {
+    //         id:idProducto,
+    //         title,
+    //         description,
+    //         price,
+    //         thumbnail,
+    //         code,
+    //         stock
+    //     }
+    //     try {
+    //         const products = await fs.promises.readFile(this.path,"utf-8")
+    //         const productsJson = JSON.parse(products)
+    //         const getId = productsJson.find((idProductos)=>{return idProductos.id === idProducto})
+    //         getId == undefined
+    //                 ? console.log("El producto no fue encontrado")
+    //                 : productsJson.push(updateProduct) && await fs.promises.writeFile(this.path,JSON.stringify(productsJson,null,'\t'))
+    //     } catch (error) {
+    //         console.log(error.message)
+    //     }
+    // }
+
+    async updateProduct(id, data) {
+
+        try{
+            let updateProduct = await this.getProductById(id)
+            console.log("updateProduct: ",updateProduct)
+            for (let prop in data) {
+                updateProduct[prop] = data[prop]
+            }
+            let data_json = JSON.stringify(this.products, null, 2)
+            await fs.promises.writeFile(this.path, data_json)
+            return 'updateProduct: done'
+        }catch(err){
+         return 'updateProduct: error', err
         }
-        try {
-            const products = await fs.promises.readFile(this.path,"utf-8")
-            const productsJson = JSON.parse(products)
-            const getId = productsJson.find((idProductos)=>{return idProductos.id === idProducto})
-            getId == undefined
-                    ? console.log("El producto no fue encontrado")
-                    : productsJson.push(updateProduct) && await fs.promises.writeFile(this.path,JSON.stringify(productsJson,null,'\t'))
-        } catch (error) {
-            console.log(error.message)
-        }
+       
     }
 
 
     async deleteProduct(idProducto){
         try {
-            const products = await fs.promises.readFile(this.path,"utf-8")
-            const productsJson = JSON.parse(products)
-            const getId = productsJson.find((idProductos)=>{return idProductos.id === idProducto})
+            const deleteProduct = await this.readProducts()
+            const getId = deleteProduct.find((idProductos)=>{return idProductos.id === idProducto})
             if(getId == undefined){
                 console.log("El producto no fue encontrado")
             }if(getId == 1){
-                productsJson.splice(idProducto,1)
-                await fs.promises.writeFile(this.path,JSON.stringify(productsJson,null,'\t'))
-                console.log("productsJson: ",productsJson)
+                deleteProduct.splice(idProducto,1)
+                await fs.promises.writeFile(this.path,JSON.stringify(deleteProduct,null,'\t'))
+                console.log("productsJson: ",deleteProduct)
             }else{
-                productsJson.splice(idProducto-1,1)
-                await fs.promises.writeFile(this.path,JSON.stringify(productsJson,null,'\t'))
-                console.log("productsJson: ",productsJson)
+                deleteProduct.splice(idProducto-1,1)
+                await fs.promises.writeFile(this.path,JSON.stringify(deleteProduct,null,'\t'))
+                console.log("productsJson: ",deleteProduct)
             }
                     
         } catch (error) {
